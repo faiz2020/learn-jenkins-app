@@ -32,13 +32,22 @@ pipeline {
             agent {
                 docker {
                     image 'node:18-alpine'
+                    args '-u root'
                     reuseNode true
                 }
             }
 
             steps {
-                sh '''
-                    test -f build/index.html
+                 sh '''
+                    echo "Checking for build artifact..."
+                    if [ -f build/index.html ]; then
+                      echo "✅ Build artifact found."
+                    else
+                      echo "❌ Build artifact missing!"
+                      exit 1
+                    fi
+
+                    echo "Running tests..."
                     npm test
                 '''
             }
