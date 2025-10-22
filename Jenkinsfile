@@ -1,11 +1,17 @@
 pipeline {
     agent any
+    environment {
+        NPM_CONFIG_CACHE = '/tmp/.npm'
+    }
+
 
     stages {
         stage('Build') {
             agent {
                 docker {
                     image 'node:18-alpine'
+                    args '-u root'
+
                     reuseNode true
                 }
             }
