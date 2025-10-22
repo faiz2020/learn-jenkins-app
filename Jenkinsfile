@@ -6,15 +6,9 @@ pipeline {
             agent {
                 docker {
                     image 'node:18-alpine'
-                    // reuseNode true
-                    args '-u root'
-
+                    reuseNode true
                 }
             }
-            environment {
-        NPM_CONFIG_CACHE = '/tmp/.npm'
-    }
-
             steps {
                 sh '''
                     ls -la
@@ -25,29 +19,19 @@ pipeline {
                     ls -la
                 '''
             }
-
-           
         }
-         stage('Test') {
+
+        stage('Test') {
             agent {
                 docker {
                     image 'node:18-alpine'
-                    args '-u root'
                     reuseNode true
                 }
             }
 
             steps {
-                 sh '''
-                    echo "Checking for build artifact..."
-                    if [ -f build/index.html ]; then
-                      echo "✅ Build artifact found."
-                    else
-                      echo "❌ Build artifact missing!"
-                      exit 1
-                    fi
-
-                    echo "Running tests..."
+                sh '''
+                    test -f build/index.html
                     npm test
                 '''
             }
@@ -59,6 +43,4 @@ pipeline {
             junit 'test-results/junit.xml'
         }
     }
-
-
 }
